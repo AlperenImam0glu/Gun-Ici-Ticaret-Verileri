@@ -1,0 +1,12 @@
+C:\Users\Alperen İmamoğlu\Source\Repos\smartpuls_Deneme\smartpuls_Deneme\bin\Debug\smartpuls_Deneme.exe.config
+C:\Users\Alperen İmamoğlu\Source\Repos\smartpuls_Deneme\smartpuls_Deneme\bin\Debug\smartpuls_Deneme.exe
+C:\Users\Alperen İmamoğlu\Source\Repos\smartpuls_Deneme\smartpuls_Deneme\bin\Debug\smartpuls_Deneme.pdb
+C:\Users\Alperen İmamoğlu\Source\Repos\smartpuls_Deneme\smartpuls_Deneme\obj\Debug\smartpuls_Deneme.csproj.AssemblyReference.cache
+C:\Users\Alperen İmamoğlu\Source\Repos\smartpuls_Deneme\smartpuls_Deneme\obj\Debug\smartpuls_Deneme.Form1.resources
+C:\Users\Alperen İmamoğlu\Source\Repos\smartpuls_Deneme\smartpuls_Deneme\obj\Debug\smartpuls_Deneme.Properties.Resources.resources
+C:\Users\Alperen İmamoğlu\Source\Repos\smartpuls_Deneme\smartpuls_Deneme\obj\Debug\smartpuls_Deneme.csproj.GenerateResource.cache
+C:\Users\Alperen İmamoğlu\Source\Repos\smartpuls_Deneme\smartpuls_Deneme\obj\Debug\smartpuls_Deneme.csproj.CoreCompileInputs.cache
+C:\Users\Alperen İmamoğlu\Source\Repos\smartpuls_Deneme\smartpuls_Deneme\obj\Debug\smartpuls_Deneme.exe
+C:\Users\Alperen İmamoğlu\Source\Repos\smartpuls_Deneme\smartpuls_Deneme\obj\Debug\smartpuls_Deneme.pdb
+C:\Users\Alperen İmamoğlu\Source\Repos\smartpuls_Deneme\smartpuls_Deneme\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Alperen İmamoğlu\Source\Repos\smartpuls_Deneme\smartpuls_Deneme\bin\Debug\Newtonsoft.Json.xml
