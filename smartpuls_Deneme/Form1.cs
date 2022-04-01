@@ -31,15 +31,33 @@ namespace smartpuls_Deneme
 
             string veriler = await response.Content.ReadAsStringAsync();
 
-            ///string ifadenin basindaki ve sonnudaki fazlalık olan degerleri atıyoruz
+            ///string ifadenin basindaki ve sonudaki fazlalık olan degerleri atıyoruz
             veriler = veriler.Remove(0, 83);
             veriler = veriler.Remove(veriler.Length-181);
-            ///string ifadenin basindaki ve sonnudaki fazlalık olan degerleri atıyoruz
+            ///string ifadenin basindaki ve sonudaki fazlalık olan degerleri atıyoruz
             
 
             List<JsonResult> jsonResults = JsonConvert.DeserializeObject<List<JsonResult>>(veriler);
+            List<ResultTable> resultTables = new List<ResultTable>();
+
+            foreach (var item in jsonResults)
+            {
+
+                ResultTable degerler = new ResultTable();
+
+                var tutar = ((item.price * item.quantity) / 10);
+                var miktar = (item.quantity / 10);
+              
+                degerler.date = item.date;
+                degerler.Fiyat = tutar / miktar;
+                degerler.Miktar = miktar;
+                degerler.Tutar = tutar;
+
+                resultTables.Add(degerler);
+            }
+
             richTextBox1.Text =veriler;
-            dataGridView1.DataSource = jsonResults;
+            dataGridView1.DataSource = resultTables;
 
         }
 
@@ -49,7 +67,16 @@ namespace smartpuls_Deneme
             public DateTime date { get; set; }
             public string conract { get; set; }
             public double price { get; set; }
-            public int quantity { get; set; }
+            public double quantity { get; set; }
+        }
+
+        public class ResultTable
+        {
+            
+            public DateTime date { get; set; }
+            public double Miktar { get; set; }
+            public double Tutar  { get; set; }
+            public double Fiyat  { get; set; }
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -58,14 +85,3 @@ namespace smartpuls_Deneme
         }
     }
 }
-
-
-//private async void button1_Click(object sender, EventArgs e)
-//{
-//    var Client = new HttpClient();
-//    Client.BaseAddress = new Uri("https://seffaflik.epias.com.tr/transparency/");
-//    HttpResponseMessage response = await Client.GetAsync("service/market/intra-day-trade-history?endDate=2022-01-26&startDate=2022-01-26");
-//    string Result = await response.Content.ReadAsStringAsync();
-//    // List<dynamic> GelenVeri = await response.Content.ReadAsByteArrayAsync();
-//    richTextBox1.Text = Result;
-//}
