@@ -39,26 +39,72 @@ namespace smartpuls_Deneme
 
             List<JsonResult> jsonResults = JsonConvert.DeserializeObject<List<JsonResult>>(veriler);
             List<ResultTable> resultTables = new List<ResultTable>();
-
+            
+            int sayac = 0;
+            string tarihler="";
+           
             foreach (var item in jsonResults)
             {
+                if (!item.conract.Contains("PB"))
+                {
+                    if ( resultTables.Count != 0)
+                    {
+                        item.date = item.date.AddSeconds(-1 * item.date.Second);
+                        resultTables[resultTables.Count - 1].date = resultTables[resultTables.Count - 1].date.AddSeconds(-1 * resultTables[resultTables.Count - 1].date.Second);
 
-                ResultTable degerler = new ResultTable();
 
-                var tutar = ((item.price * item.quantity) / 10);
-                var miktar = (item.quantity / 10);
-              
-                degerler.date = item.date;
-                degerler.Fiyat = tutar / miktar;
-                degerler.Miktar = miktar;
-                degerler.Tutar = tutar;
+                        if ( item.date == resultTables[resultTables.Count - 1].date && item.conract== resultTables[resultTables.Count - 1].conract)
+                        {
+                            tarihler += "tarihleri ve conractlar eşit = "+item.date+"- "+ resultTables[resultTables.Count - 1].date +"\n";
+                            var tutar = ((item.price * item.quantity) / 10);
+                            var miktar = (item.quantity / 10);
 
-                resultTables.Add(degerler);
+                            resultTables[resultTables.Count - 1].Fiyat += tutar/miktar;
+                            resultTables[resultTables.Count - 1].Miktar += miktar;
+                            resultTables[resultTables.Count - 1].Tutar += tutar;
+                        }
+                        else
+                        {
+                            tarihler += "" + item.date + "- " + resultTables[resultTables.Count - 1].date +" "+item.conract+" "+ resultTables[resultTables.Count - 1].conract + " " +"\n";
+                            ResultTable degerler = new ResultTable();
+
+                            var tutar = ((item.price * item.quantity) / 10);
+                            var miktar = (item.quantity / 10);
+
+                            degerler.conract = item.conract;
+                            degerler.date = item.date;
+                            degerler.Fiyat = tutar / miktar;
+                            degerler.Miktar = miktar;
+                            degerler.Tutar = tutar;
+
+                            resultTables.Add(degerler);
+                        }
+                    }
+                    else
+                    {
+                        item.date = item.date.AddSeconds(-1 * item.date.Second);
+                        sayac += 1;
+                        ResultTable degerler = new ResultTable();
+
+                        var tutar = ((item.price * item.quantity) / 10);
+                        var miktar = (item.quantity / 10);
+
+                        degerler.conract = item.conract;
+                        degerler.date = item.date;
+                        degerler.Fiyat = tutar / miktar;
+                        degerler.Miktar = miktar;
+                        degerler.Tutar = tutar;
+
+                        resultTables.Add(degerler);
+                    }
+                }
+             
+               
             }
 
-            richTextBox1.Text =veriler;
-            dataGridView1.DataSource = resultTables;
-
+            richTextBox1.Text ="" + tarihler;
+            //dataGridView1.DataSource = resultTables;
+            dataGridView1.DataSource = jsonResults;
         }
 
         public class JsonResult
@@ -72,8 +118,8 @@ namespace smartpuls_Deneme
 
         public class ResultTable
         {
-            
             public DateTime date { get; set; }
+            public string conract { get; set; }
             public double Miktar { get; set; }
             public double Tutar  { get; set; }
             public double Fiyat  { get; set; }
