@@ -22,30 +22,24 @@ namespace smartpuls_Deneme
             InitializeComponent();
         }
 
-        //: https://seffaflik.epias.com.tr/transparency/service/market/intra-day-trade-history?endDate=2022-01-26&startDate=2022-01-26
-
+ 
         private async void button1_Click(object sender, EventArgs e)
         {
             var Client = new HttpClient();
             Client.BaseAddress = new Uri("https://seffaflik.epias.com.tr/transparency/");
             HttpResponseMessage response = await Client.GetAsync("service/market/intra-day-trade-history?endDate=2022-01-26&startDate=2022-01-26");
 
-           
             string veriler = await response.Content.ReadAsStringAsync();
 
-            // veriler = @"{"id":444120877,"date":"2022 - 01 - 26T00: 00:56.000 + 0300","conract":"PH22012608","price":1341.99,"quantity":10}";
-
-
+            ///string ifadenin basindaki ve sonnudaki fazlalık olan degerleri atıyoruz
             veriler = veriler.Remove(0, 83);
             veriler = veriler.Remove(veriler.Length-181);
+            ///string ifadenin basindaki ve sonnudaki fazlalık olan degerleri atıyoruz
             
-        
-            
-            //cumle.Replace("=", ":");
+
             List<JsonResult> jsonResults = JsonConvert.DeserializeObject<List<JsonResult>>(veriler);
             richTextBox1.Text =veriler;
-            //
-            //richTextBox1.Text = veriler;
+            dataGridView1.DataSource = jsonResults;
 
         }
 
@@ -58,7 +52,10 @@ namespace smartpuls_Deneme
             public int quantity { get; set; }
         }
 
+        private void Form1_Load(object sender, EventArgs e)
+        {
 
+        }
     }
 }
 
