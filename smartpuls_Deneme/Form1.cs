@@ -1,17 +1,10 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.IO;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Xml.Linq;
-using System.Xml.Serialization;
+
 
 namespace smartpuls_Deneme
 {
@@ -25,118 +18,26 @@ namespace smartpuls_Deneme
  
         private async void button1_Click(object sender, EventArgs e)
         {
-            var Client = new HttpClient();
-            Client.BaseAddress = new Uri("https://seffaflik.epias.com.tr/transparency/");
-            HttpResponseMessage response = await Client.GetAsync("service/market/intra-day-trade-history?endDate=2022-01-26&startDate=2022-01-26");
 
-            string veriler = await response.Content.ReadAsStringAsync();
+            string veriler;
 
-            ///string ifadenin basindaki ve sonudaki fazlalık olan degerleri atıyoruz
-            veriler = veriler.Remove(0, 83);
-            veriler = veriler.Remove(veriler.Length-181);
-            ///string ifadenin basindaki ve sonudaki fazlalık olan degerleri atıyoruz
-            
+            veriler = await VerileriGetir();
+            veriler = VeriDuzenle(veriler);
 
-            List<JsonResult> jsonResults = JsonConvert.DeserializeObject<List<JsonResult>>(veriler);
+            List<JsonResult> jsonResults = DataToJson(veriler);
             List<ResultTable> resultTables = new List<ResultTable>();
-            List<JsonResult> jsonResultsShort = new List<JsonResult>();
-            int sayac = 0;
-            string tarihler="";
-            string conractDegeri = "";
 
-            int adad = jsonResults.Count;
+            resultTables = TabloDuzenle(jsonResults);
 
-            for (int i = 0; i < jsonResults.Count; i++)
-            {
-                conractDegeri = jsonResults[i].conract;
-                jsonResultsShort.Add(jsonResults[i]);
-                for (int j = 1; j < jsonResults.Count; j++)
-                {
-                    if(conractDegeri == jsonResults[j].conract)
-                    {
-                        jsonResultsShort.Add(jsonResults[j]);
-                        jsonResults.RemoveAt(j);
-                        j = 0;
-                    }
-                }
-                jsonResults.RemoveAt(i);
-                i = 0;
-                if (jsonResults.Count == 0)
-                {
-                    break;
-                }
-            }
+            label1.Text = "";
+            label1.Text += "Veriler conract parametrelerine göre"+
+                " gruplanmış ve dakikalara göre toplanmıştır.\n"
+                +tarihAl()+" Tarihli veriler getirilmiştir.";
+            label1.Visible = true;
 
-            foreach (var item in jsonResultsShort)
-            {
-                if (!item.conract.Contains("PB"))
-                {
-                    if ( resultTables.Count != 0)
-                    {
-                        item.date = item.date.AddSeconds(-1 * item.date.Second);
-                        resultTables[resultTables.Count - 1].date = resultTables[resultTables.Count - 1].date.AddSeconds(-1 * resultTables[resultTables.Count - 1].date.Second);
-
-
-                        if ( item.date == resultTables[resultTables.Count - 1].date && item.conract== resultTables[resultTables.Count - 1].conract)
-                        {
-                            tarihler += "tarihleri ve conractlar eşit = "+item.date+"- "+ resultTables[resultTables.Count - 1].date +"\n";
-                            var tutar = ((item.price * item.quantity) / 10);
-                            var miktar = (item.quantity / 10);
-
-                            resultTables[resultTables.Count - 1].Fiyat += 0;
-                            resultTables[resultTables.Count - 1].Miktar += miktar;
-                            resultTables[resultTables.Count - 1].Tutar += tutar;
-                        }
-                        else
-                        {
-                            tarihler += "" + item.date + "- " + resultTables[resultTables.Count - 1].date +" "+item.conract+" "+ resultTables[resultTables.Count - 1].conract + " " +"\n";
-                            ResultTable degerler = new ResultTable();
-
-                            var tutar = ((item.price * item.quantity) / 10);
-                            var miktar = (item.quantity / 10);
-
-                            degerler.conract = item.conract;
-                            degerler.date = item.date;
-                            degerler.Fiyat = 0;
-                            degerler.Miktar = miktar;
-                            degerler.Tutar = tutar;
-
-                            resultTables.Add(degerler);
-                        }
-                    }
-                    else
-                    {
-                        item.date = item.date.AddSeconds(-1 * item.date.Second);
-                        sayac += 1;
-                        ResultTable degerler = new ResultTable();
-
-                        var tutar = ((item.price * item.quantity) / 10);
-                        var miktar = (item.quantity / 10);
-
-                        degerler.conract = item.conract;
-                        degerler.date = item.date;
-                        degerler.Fiyat = 0;
-                        degerler.Miktar = miktar;
-                        degerler.Tutar = tutar;
-
-                        resultTables.Add(degerler);
-                    }
-                }
-             
-               
-            }
-            string tamam = "";
-            foreach (var item in jsonResultsShort)
-            {
-                if (item.id == 444121195)
-                {
-                    tamam = "lsitede var";
-                }
-            }
-            richTextBox1.Text ="" + adad+"\n"+jsonResultsShort.Count;
-            //dataGridView1.DataSource = resultTables;
-            
             dataGridView1.DataSource = resultTables;
+
+        
         }
 
         public class JsonResult
@@ -157,7 +58,183 @@ namespace smartpuls_Deneme
             public double Fiyat  { get; set; }
         }
 
+
+        private async Task<string> VerileriGetir()
+        {
+            var Client = new HttpClient();
+            Client.BaseAddress = new Uri("https://seffaflik.epias.com.tr/transparency/");
+
+            string tarih;
+            tarih = tarihAl();
+
+            HttpResponseMessage response = await Client.GetAsync("service/market/intra-day-trade-history?endDate="+tarih+"&startDate="+tarih);
+
+            string veriler = await response.Content.ReadAsStringAsync();
+
+            return veriler;
+        }
+
+
+        private  string tarihAl()
+        {
+            string tarih;
+
+            DateTime dateTime = DateTime.Now;
+
+            int year = dateTime.Year;
+            int month = dateTime.Month;
+            int day = dateTime.Day;
+
+            tarih = "" + year;
+            if (month<10)
+            {
+                tarih += "-0" + month;
+            }
+            else
+            {
+                tarih += "-" + month;
+            }
+            if (day < 10)
+            {
+                tarih += "-0" + day;
+            }
+            else
+            {
+                tarih += "-" + day;
+            }
+
+            return tarih;
+        }
+
+        private List<JsonResult> DataToJson(string veriler)
+        {
+
+            List<JsonResult> jsonResults = JsonConvert.DeserializeObject<List<JsonResult>>(veriler);
+            List<JsonResult> jsonResultsShort = new List<JsonResult>();
+          
+
+            string conractDegeri = "";
+
+            for (int i = 0; i < jsonResults.Count; i++)
+            {
+                conractDegeri = jsonResults[i].conract;
+                jsonResultsShort.Add(jsonResults[i]);
+                for (int j = 1; j < jsonResults.Count; j++)
+                {
+                    if (conractDegeri == jsonResults[j].conract)
+                    {
+                        jsonResultsShort.Add(jsonResults[j]);
+                        jsonResults.RemoveAt(j);
+                        j = 0;
+                    }
+                }
+                jsonResults.RemoveAt(i);
+                i = 0;
+                if (jsonResults.Count == 0)
+                {
+                    break;
+                }
+            }
+
+            return jsonResultsShort;
+        }
+
+        private string VeriDuzenle(string veri)
+        {
+            int i = 0;
+            for (i = 0; i < veri.Length; i++)
+            {
+                if (veri[i] =='[')
+                {
+                    break;
+                }
+            }
+            veri = veri.Remove(0, i);
+            Boolean x =false;
+            for (i = veri.Length-1; i > 0; i--)
+            {
+                if (veri[i] == '[')
+                {
+                    x = true;
+                }
+                if (veri[i] == ']' && x == true)
+                {
+                    break;
+                }
+
+            }
+            i += 1;
+            veri = veri.Remove(veri.Length - (veri.Length-i));
+            return veri;
+        }
+
+        private List<ResultTable> TabloDuzenle(List<JsonResult> jsonResultsShort)
+        {
+
+            List<ResultTable> resultTables = new List<ResultTable>();
+            foreach (var item in jsonResultsShort)
+            {
+                if (!item.conract.Contains("PB"))
+                {
+                    if (resultTables.Count != 0)
+                    {
+                        item.date = item.date.AddSeconds(-1 * item.date.Second);
+                        resultTables[resultTables.Count - 1].date = resultTables[resultTables.Count - 1].date.AddSeconds(-1 * resultTables[resultTables.Count - 1].date.Second);
+
+
+                        if (item.date == resultTables[resultTables.Count - 1].date && item.conract == resultTables[resultTables.Count - 1].conract)
+                        {
+                            var tutar = ((item.price * item.quantity) / 10);
+                            var miktar = (item.quantity / 10);
+
+                            resultTables[resultTables.Count - 1].Fiyat += 0;
+                            resultTables[resultTables.Count - 1].Miktar += miktar;
+                            resultTables[resultTables.Count - 1].Tutar += tutar;
+                        }
+                        else
+                        {
+                            ResultTable degerler = new ResultTable();
+
+                            var tutar = ((item.price * item.quantity) / 10);
+                            var miktar = (item.quantity / 10);
+
+                            degerler.conract = item.conract;
+                            degerler.date = item.date;
+                            degerler.Fiyat = 0;
+                            degerler.Miktar = miktar;
+                            degerler.Tutar = tutar;
+
+                            resultTables.Add(degerler);
+                        }
+                    }
+                    else
+                    {
+                        item.date = item.date.AddSeconds(-1 * item.date.Second);
+                        ResultTable degerler = new ResultTable();
+
+                        var tutar = ((item.price * item.quantity) / 10);
+                        var miktar = (item.quantity / 10);
+
+                        degerler.conract = item.conract;
+                        degerler.date = item.date;
+                        degerler.Fiyat = 0;
+                        degerler.Miktar = miktar;
+                        degerler.Tutar = tutar;
+
+                        resultTables.Add(degerler);
+                    }
+                }
+
+            }
+            return resultTables;
+        }
+
         private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label1_Click(object sender, EventArgs e)
         {
 
         }
