@@ -27,7 +27,7 @@ namespace smartpuls_Deneme
             List<JsonResult> jsonResults = DataToJson(veriler);
             List<ResultTable> resultTables = new List<ResultTable>();
 
-            resultTables = TabloDuzenle(jsonResults);
+            resultTables = TabloVerileriniDuzenle(jsonResults);
 
             label1.Text = "";
             label1.Text += "Veriler conract parametrelerine göre"+
@@ -39,25 +39,6 @@ namespace smartpuls_Deneme
 
         
         }
-
-        public class JsonResult
-        {
-            public int id { get; set; }
-            public DateTime date { get; set; }
-            public string conract { get; set; }
-            public double price { get; set; }
-            public double quantity { get; set; }
-        }
-
-        public class ResultTable
-        {
-            public string conract { get; set; }
-            public DateTime date { get; set; }
-            public double Miktar { get; set; }
-            public double Tutar  { get; set; }
-            public double Fiyat  { get; set; }
-        }
-
 
         private async Task<string> VerileriGetir()
         {
@@ -86,20 +67,16 @@ namespace smartpuls_Deneme
             int day = dateTime.Day;
 
             tarih = "" + year;
-            if (month<10)
-            {
+            if (month<10){
                 tarih += "-0" + month;
             }
-            else
-            {
+            else{
                 tarih += "-" + month;
             }
-            if (day < 10)
-            {
+            if (day < 10){
                 tarih += "-0" + day;
             }
-            else
-            {
+            else{
                 tarih += "-" + day;
             }
 
@@ -112,7 +89,6 @@ namespace smartpuls_Deneme
             List<JsonResult> jsonResults = JsonConvert.DeserializeObject<List<JsonResult>>(veriler);
             List<JsonResult> jsonResultsShort = new List<JsonResult>();
           
-
             string conractDegeri = "";
 
             for (int i = 0; i < jsonResults.Count; i++)
@@ -168,9 +144,9 @@ namespace smartpuls_Deneme
             return veri;
         }
 
-        private List<ResultTable> TabloDuzenle(List<JsonResult> jsonResultsShort)
+        private List<ResultTable> TabloVerileriniDuzenle(List<JsonResult> jsonResultsShort)
         {
-
+            Boolean tekrar= false;
             List<ResultTable> resultTables = new List<ResultTable>();
             foreach (var item in jsonResultsShort)
             {
@@ -184,6 +160,7 @@ namespace smartpuls_Deneme
 
                         if (item.date == resultTables[resultTables.Count - 1].date && item.conract == resultTables[resultTables.Count - 1].conract)
                         {
+                            tekrar = true;
                             var tutar = ((item.price * item.quantity) / 10);
                             var miktar = (item.quantity / 10);
 
@@ -193,6 +170,11 @@ namespace smartpuls_Deneme
                         }
                         else
                         {
+                            if (tekrar == true)
+                            {
+                                resultTables[resultTables.Count - 1].Fiyat += resultTables[resultTables.Count - 1].Tutar / resultTables[resultTables.Count - 1].Miktar;
+                            }
+                            tekrar = false;
                             ResultTable degerler = new ResultTable();
 
                             var tutar = ((item.price * item.quantity) / 10);
@@ -200,7 +182,7 @@ namespace smartpuls_Deneme
 
                             degerler.conract = item.conract;
                             degerler.date = item.date;
-                            degerler.Fiyat = 0;
+                            degerler.Fiyat = tutar/miktar;
                             degerler.Miktar = miktar;
                             degerler.Tutar = tutar;
 
@@ -217,7 +199,7 @@ namespace smartpuls_Deneme
 
                         degerler.conract = item.conract;
                         degerler.date = item.date;
-                        degerler.Fiyat = 0;
+                        degerler.Fiyat = tutar / miktar;
                         degerler.Miktar = miktar;
                         degerler.Tutar = tutar;
 
@@ -227,6 +209,24 @@ namespace smartpuls_Deneme
 
             }
             return resultTables;
+        }
+
+        public class JsonResult
+        {
+            public int id { get; set; }
+            public DateTime date { get; set; }
+            public string conract { get; set; }
+            public double price { get; set; }
+            public double quantity { get; set; }
+        }
+
+        public class ResultTable
+        {
+            public string conract { get; set; }
+            public DateTime date { get; set; }
+            public double Miktar { get; set; }
+            public double Tutar { get; set; }
+            public double Fiyat { get; set; }
         }
 
         private void Form1_Load(object sender, EventArgs e)
