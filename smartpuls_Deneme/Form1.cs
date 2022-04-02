@@ -37,7 +37,11 @@ namespace smartpuls_Deneme
 
             dataGridView1.DataSource = resultTables;
 
-        
+            dataGridView1.Columns[0].HeaderText = "Conract";
+            dataGridView1.Columns[1].HeaderText = "Tarih";
+            dataGridView1.Columns[2].HeaderText = "Toplam İşlem Miktarı (MWh)";
+            dataGridView1.Columns[3].HeaderText = "Toplam İşlem Tutarı (TL)";
+            dataGridView1.Columns[4].HeaderText = "Ağırlıklı Ortalama Fiyat (TL/MWh)";
         }
 
         private async Task<string> VerileriGetir()
@@ -104,7 +108,11 @@ namespace smartpuls_Deneme
                         j = 0;
                     }
                 }
-                jsonResults.RemoveAt(i);
+                if (jsonResults.Count>1)
+                {
+                    jsonResults.RemoveAt(i);
+                }
+               
                 i = 0;
                 if (jsonResults.Count == 0)
                 {
