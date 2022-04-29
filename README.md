@@ -1,4 +1,4 @@
-# Teknik-Mulakat-Odevi
+# Gün İçi Ticaret Verileri
 
-## SmartPulse A.Ş. Stajyer Değerlendirme Teknik Mülakat Ödevi
-Alperen İmamoğlu
+Teknik Mülakat Ödevi için yapılmıştır. 
+(https://seffaflik.epias.com.tr/transparency/)[https://seffaflik.epias.com.tr/transparency/] sitesi üzerinden günlük verilerin belirli parametrelerde toplanıp gösterilmesi amaçlanmıştır.
