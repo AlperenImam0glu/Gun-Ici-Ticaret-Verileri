@@ -2,7 +2,7 @@
 
 Teknik Mülakat Ödevi için yapılmıştır.
 
-https://seffaflik.epias.com.tr/transparency/ sitesi üzerinden günlük verilerin, belirli parametrelerde toplanıp gösterilmesi amaçlanmıştır.
+https://seffaflik.epias.com.tr/transparency/ sitesi üzerinden alınan günlük verilerin, belirli parametrelerde toplanıp gösterilmesi amaçlanmıştır.
 
 ## Ekran Görüntüsü
 
